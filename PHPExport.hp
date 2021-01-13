@@ -3,6 +3,8 @@
 /**
  * PHPExport for CodeIgniter
  * 
+ * dependencies : PHPExcel
+ * 
  * @author zdienos <mail@zdienos.com>
  * @link https://www.zdienos.com 
  * 
@@ -29,6 +31,7 @@ class PHPExport extends PHPExcel {
 	public $warnaFontHeader;
 	public $rataTengah;
 	public $rataKanan;
+	public $fieldAccounting;
     
 
 	private function _nomor_ke_kolom($num) {
@@ -75,6 +78,11 @@ class PHPExport extends PHPExcel {
 
 	public function rataKanan($arrKanan)	{
 		$this->rataKanan = explode(',',$arrKanan);
+		return $this;
+	}
+
+	public function fieldAccounting($arrAccounting)	{
+		$this->fieldAccounting = explode(',',$arrAccounting);
 		return $this;
 	}
 
@@ -143,7 +151,7 @@ class PHPExport extends PHPExcel {
 						'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
 						'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
 					)
-				);							
+				);					
 											
 				//isi header column dengan array
 				for ($a=0;$a<count($column_title);$a++) {					
@@ -174,17 +182,27 @@ class PHPExport extends PHPExcel {
 					$col=0;
 					foreach ($data_item as $value) {	
 						$objset->setCellValue("$column_name[$col]".$baris, $value);
+						//rata Kiri
 						if(null!==$this->rataTengah){
 							foreach ($this->rataTengah as $c){
 								if($c==$col){
 									$this->setActiveSheetIndex()->getStyle("$column_name[$c]".$baris)->applyFromArray($tengah_tengah);		
 								}
 							}
-						}						
+						}			
+						//rata Kanan			
 						if(null!==$this->rataKanan){
 							foreach ($this->rataKanan as $c){
 								if($c==$col){
 									$this->setActiveSheetIndex()->getStyle("$column_name[$c]".$baris)->applyFromArray($kanan_tengah);		
+								}
+							}
+						}				
+						//accounting Format		
+						if(null!==$this->fieldAccounting){
+							foreach ($this->fieldAccounting as $c){
+								if($c==$col){									
+									$this->setActiveSheetIndex()->getStyle("$column_name[$c]".$baris)->getNumberFormat()->setFormatCode('_("Rp"* #,##0.00_);_("Rp"* \(#,##0.00\);_("Rp"* "-"??_);_(@_)');
 								}
 							}
 						}						
@@ -197,7 +215,7 @@ class PHPExport extends PHPExcel {
 		} 		
     }
     
-	private function writeToFile($filename, $writerType = 'Excel5', $mimes = 'application/vnd.ms-excel') {    
+	private function writeToFile($filename, $writerType, $mimes) {    
         header("Content-Type: $mimes");
         header("Content-Disposition: attachment;filename=\"$filename\"");
         header("Cache-Control: max-age=0");
@@ -206,11 +224,16 @@ class PHPExport extends PHPExcel {
     }
 
     public function excel2003($namafile='noname') {                
-        $this->writeToFile($namafile . '.xls');
+        //$this->writeToFile($namafile . '.xls');
+		$this->writeToFile($namafile . '.xls', 'Excel5', 'application/vnd.ms-excel');
     }
 
     public function excel2007($namafile='noname') {
         $this->writeToFile($namafile . '.xlsx', 'Excel2007', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    }
+	}
+	
+	public function csv($namafile='noname',$delimiter=','){
+		$this->writeToFile($namafile . '.csv', 'CSV', 'text/csv');
+	}
 
 }
