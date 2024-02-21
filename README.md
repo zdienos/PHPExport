@@ -1,12 +1,13 @@
-# PHPExport
+## PHPExport
 Library tambahan untuk Codeigniter V3, yang berfungsi untuk membuat export excel tanpa ribet.
 
-### Dependency
-PHPSpreadsheet
-Data array yang akan dieksport
+### Requirement
+-  PHPSpreadsheet
+-  Data array yang akan dieksport
 
 
-### Guide
+### Usage
+
 
 #### Tambahkan file ke library CI lalu Load librarynya
 ```
